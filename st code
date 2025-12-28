@@ -1,0 +1,171 @@
+var_output 
+    m1: BOOL;
+    m2_1: BOOL;
+    m2_2: BOOL;
+    m3: BOOL;
+    m4_1: BOOL;
+    m4_2: BOOL;
+    m5: BOOL;
+    m6_1: BOOL;
+    m6_2: BOOL;
+    m7: BOOL;
+    print: BOOL;        //command for print cabinet
+end_var
+
+var_input
+    s1: BOOL;
+    s2: BOOL;
+    s3: BOOL;
+    s4: BOOL;
+    s5: BOOL;
+    s6: BOOL;
+    s7: BOOL;
+    s8: BOOL;
+    s9: BOOL;
+    s10: BOOL;
+    s11: BOOL;
+    s12: BOOL;
+    s13: BOOL;
+    s14: BOOL;
+    e1: INT;            //encoder 1
+    e2: INT;            //encoder 2
+    e3: INT;            //encoder 3
+    start: BOOL;
+    stop: BOOL;
+    printed: BOOL;      //return that bit from print cabinet
+end_var
+
+var
+    steps: INT:= 0;
+
+    timer2: TON;
+    timer4: TON;
+    timer4_1: TON;
+    timer6_2: TON;
+    timer6_1: TON;
+    timer7: TON;
+end_var
+
+
+m1 := FALSE;
+m2_1 := FALSE;
+m2_2 := FALSE;
+m3 := FALSE;
+m4_1 := FALSE;
+m4_2 := FALSE;
+m5 := FALSE;
+m6_1 := FALSE;
+m6_2 := FALSE;
+m7 := FALSE;
+print := FALSE;      
+
+if stop or (not start) then
+    steps:=0;
+end_if
+
+//the main logic:
+case of steps
+
+    0:
+        if start and (not stop) then
+            if s1 then
+                steps:=10;
+            end_if
+        end_if
+
+
+    10:                         //opertator gives new pallete
+            m1:=TRUE;
+            if s1 and s2 then
+                steps:= 20;
+            end_if
+        end_if    
+
+    20:
+        m2_2:= TRUE;
+        if s3 and s4 then
+            m1:=FALSE;
+            m2_2:=FALSE;        //simplest motor
+            m2_1:=TRUE;         //turn around motor
+            if e1=90 then       //encoder
+                m2_1:=FALSE;
+                    timer2(IN:=TRUE, PT:=T#5s);
+                        if timer2.Q then
+                            m2_2:=TRUE;
+                            steps:=30
+                        end_if
+            end_if
+        end_if
+    30:
+        m3:=TRUE;               //simple motor
+        if s5 and s6 then
+            m2_2:=FALSE;
+            steps:=40;
+        end_if
+
+    40:
+        m4_2:=TRUE;             //simole motor
+        if s7 and s8 then
+            m3:=FALSE;
+            m4_2:=FALSE;
+            timer4(IN:=TRUE, PT:=T#5s);
+                if timer4.Q then
+                    m4_1:=TRUE;     //turn around motor
+                        if e2=1800 then     //encoder
+                        m4_1:=FALSE;
+                        timer4_1(IN:=TRUE, PT:T#5s);
+                            if timer4_1.Q then
+                                m4_2:=TRUE;
+                                steps:=50;
+                            end_if
+                        end_if
+                end_if
+        end_if
+
+    50: 
+        m5:=TRUE;               //simple motor
+        if s9 and s10 then
+            m4_2:=FALSE;        
+            steps:=60;
+        end_if
+
+    60:
+        m6_2:=TRUE;             //simple motor
+        if s11 and s12 then
+            m5:=FALSE;
+            m6_2:=FALSE;
+            timer6_2(IN:=TRUE, PT:=T#5s);
+                if timer6_2.Q then
+                    m6_1:=TRUE;         //turn around motor
+                        if e3=90 then           //encoder
+                        m6_1:=FALSE;
+                        timer6_1(IN:=TRUE, PT:=T#5s);
+                            if timer6_1.Q then
+                            m6_2:=TRUE;
+                            steps:=70;
+                            end_if
+                        end_if
+                 end_if
+        end_if
+
+    70:                             //moving and stamp sticker
+        m7:=TRUE;
+        if s13 and s14 then
+            m7:=FALSE;
+            m6_2:=FALSE;
+            print:=TRUE;            //gives signal for electrical cabinet for printing
+            steps:=701;
+        end_if
+
+    701:    
+        if printed then     //returned signal from printing
+            print:=FALSE
+                timer7(IN:=TRUE, PT:=T#15s);
+                    if timer7.Q then
+                        m7:=TRUE;
+                        steps:=0;
+                    end_if        
+        end_if
+    else
+        steps:=0;
+end_case
