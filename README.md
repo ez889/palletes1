@@ -13,6 +13,10 @@ This is intentionally simplified demo logic.
 5) m5 transfer to the next step
 6) turntable #3 (m6_2, m6_1, e3) - pull, rotate, release  
 7) m7 move to print position, stop, print, release
+   
+![photo_2026-01-25_18-35-00](https://github.com/user-attachments/assets/43dfc27a-516f-4d82-8361-f294742d0161)
+
+   
 
 Control is a simple step sequencer (steps 0,10,20,30,40,50,60,70,701).
 
