@@ -1,5 +1,8 @@
 # Pallet line demo (CODESYS / ST)
 
+ST code is contain all the logic for this application.
+LD scheme is contain some example of networks of this application.
+
 Small learning project: an operator loads a pallet manually, it moves through rollers, passes 3 turntables, then stops at a print station.  
 At the print station the pallet is held in position, I send a signal to the print cabinet to start printing, wait for the printed feedback bit, and then release the pallet.
 
