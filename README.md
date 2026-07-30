@@ -1,5 +1,5 @@
 # Pallet line demo (CODESYS / ST)
-version 1.0
+# version 1.0
 ST code is contain all the logic for this application.
 LD scheme is contain some example of networks of this application.
 
